@@ -9,7 +9,7 @@ app.use(express.urlencoded({extended:true}));
 import cookieParser from 'cookie-parser';
 app.use(cookieParser());
 app.use(cors({
-  origin:"http://localhost:5173",
+  origin:process.env.FRONTEND_URL || "http://localhost:5173",
   credentials:true,
 }));
 import userRouter from "./Routes/userRoutes";
@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URL!)
     .catch(err => console.log(err));
 
 app.use("/api/all",userRouter);
-const PORT=3000;
+const PORT=process.env.PORT || 3000;
 app.listen(PORT,()=>{
   console.log(`Server is listening to http://localhost:${PORT}`)
 })

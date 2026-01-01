@@ -13,7 +13,7 @@ const {name,gmail,password}=req.body;
 if(!name || !gmail || !password){
     return res.status(401).json({
         message:"Enter proper detail"
-    });
+    }); 
 }
 
 const check=await userModel.findOne({gmail});
