@@ -31,7 +31,11 @@ bcrypt.genSalt(12, function(err, salt) {
     password:hash,
 });
 let token=jwt.sign({gmail:gmail,userId:newUser._id},process.env.JWT_SECRET!);
-res.cookie("token",token);
+res.cookie("token",token,{
+    httpOnly:true,
+    secure:true,
+    sameSite:"none",
+});
 return res.status(200).json({
     data:newUser,
     message:"Successfully Login"  
