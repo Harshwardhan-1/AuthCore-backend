@@ -152,7 +152,7 @@ export const otpVerify=async(req:Request,res:Response)=>{
             message:"please enter correct otp"
         });
     }
-    if(checkUser.otp!==otp){
+    if(Number(checkUser.otp)!==Number(otp)){
         return res.status(401).json({
             message:"incorrect otp",
         });
