@@ -165,3 +165,39 @@ export const otpVerify=async(req:Request,res:Response)=>{
             data:checkUser,
         });
 }
+
+
+
+export const changePassword=async(req:Request,res:Response)=>{
+    const {password,confirmPassword}=req.body;
+    if(!password || !confirmPassword){
+        return res.status(401).json({
+            message:"enter detail properly",
+        });
+    }
+    if(password!==confirmPassword){
+        return res.status(401).json({
+            message:"fill your detail properly",
+        });
+    }
+    const currentUser=(req as any).user.gmail;
+    const checkUser=await userModel.findOne({gmail:currentUser});
+    if(!checkUser){
+        return res.status(401).json({
+            message:"user not found"
+        });
+    }
+    if(!checkUser.password){
+        return res.status(401).json({
+            message:"do a signUp first",
+        });
+    }
+    const salt=bcrypt.genSaltSync(12);
+    const changePassword=bcrypt.hashSync(password, salt);
+    checkUser.password===changePassword;
+    await checkUser.save();
+    return res.status(200).json({
+        message:"change successfull",
+        data:checkUser
+    });
+}
