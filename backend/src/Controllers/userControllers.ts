@@ -194,10 +194,13 @@ export const changePassword=async(req:Request,res:Response)=>{
     }
     const salt=bcrypt.genSaltSync(12);
     const changePassword=bcrypt.hashSync(password, salt);
-    checkUser.password===changePassword;
+    checkUser.password=changePassword;
     await checkUser.save();
     return res.status(200).json({
         message:"change successfull",
-        data:checkUser
+        data:{
+            name:checkUser.name,
+            gmail:checkUser.gmail,
+        }
     });
 }
