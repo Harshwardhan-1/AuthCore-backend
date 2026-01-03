@@ -106,12 +106,10 @@ const transport=nodemailer.createTransport({
 });
 
 await transport.sendMail({
-    from:'process.env.EMAIL_USER',
+    from:process.env.EMAIL_USER,
     to:gmail,
     subject:"your otp for changing the password is",
-    text:`
-    hello ${checkUser.name}
-    Your otp for reseting password is ${randomNumber}.It will expire in two minutes.
+    text:`hello ${checkUser.name} Your otp for reseting password is ${randomNumber}.It will expire in two minutes.
     
     with regards,
     AuthCore Team,`
