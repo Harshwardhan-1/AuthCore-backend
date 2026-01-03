@@ -2,6 +2,8 @@ import {Request,Response} from 'express';
 import {userModel} from '../models/userModel';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
+import SendmailTransport from 'nodemailer/lib/sendmail-transport';
 export const getAll=async(req:Request,res:Response)=>{
     const allUser=await userModel.find();
     return res.status(200).json({
@@ -78,4 +80,52 @@ export const getSignIn=async(req:Request,res:Response)=>{
         message:"Login Successfully",
     });
 });
-} 
+}
+
+
+
+
+export const forgotPassword=async(req:Request,res:Response)=>{
+const {gmail}=req.body;
+const checkUser=await userModel.findOne({gmail});
+if(!checkUser){
+    return res.status(401).json({
+        message:"Please do a signUp first",
+    });
+}
+if(!checkUser.gmail){
+    return res.status(401).json({
+        message:"something went wrong"
+    })
+}
+const randomNumber=Math.floor(100000+Math.random()*900000);
+checkUser.otp=randomNumber;
+checkUser.otpExpire=Date.now()+(2*60*1000);
+await checkUser.save();
+const transport=nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASS,
+    }
+});
+
+await transport.sendMail({
+    from:'harshwardhany87@gmail.com',
+    to:checkUser.gmail,
+    subject:"your otp for changing the password is",
+    text:`
+    hello ${checkUser.name}
+    Your otp for reseting password is ${randomNumber}.It will expire in two minutes.
+    
+    with regards,
+    AuthCore Team,`
+});
+return res.status(200).json({
+    message:"otp send successfully",
+    data:{
+        name:checkUser.name,
+        gmail:checkUser.gmail,
+    }
+})
+}
