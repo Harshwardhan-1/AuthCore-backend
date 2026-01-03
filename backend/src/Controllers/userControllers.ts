@@ -1,9 +1,8 @@
 import {Request,Response} from 'express';
+import nodemailer from 'nodemailer';
 import {userModel} from '../models/userModel';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import nodemailer from 'nodemailer';
-import SendmailTransport from 'nodemailer/lib/sendmail-transport';
 export const getAll=async(req:Request,res:Response)=>{
     const allUser=await userModel.find();
     return res.status(200).json({
