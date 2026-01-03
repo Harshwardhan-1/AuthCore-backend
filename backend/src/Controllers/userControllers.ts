@@ -70,8 +70,12 @@ export const getSignIn=async(req:Request,res:Response)=>{
         sameSite:"none"
     });
     return res.status(200).json({
-        data:checkUser,
+        data:{
+            _id:checkUser._id,
+            name:checkUser.name,
+            gmail:checkUser.gmail,
+        },
         message:"Login Successfully",
     });
 });
-}
+} 
