@@ -106,7 +106,7 @@ const transport=nodemailer.createTransport({
 });
 
 await transport.sendMail({
-    from:'harshwardhany87@gmail.com',
+    from:'process.env.EMAIL_USER',
     to:gmail,
     subject:"your otp for changing the password is",
     text:`
