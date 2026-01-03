@@ -93,11 +93,6 @@ if(!checkUser){
         message:"Please do a signUp first",
     });
 }
-if(!checkUser.gmail){
-    return res.status(401).json({
-        message:"something went wrong"
-    })
-}
 const randomNumber=Math.floor(100000+Math.random()*900000);
 checkUser.otp=randomNumber;
 checkUser.otpExpire=Date.now()+(2*60*1000);
@@ -106,13 +101,13 @@ const transport=nodemailer.createTransport({
     service:'gmail',
     auth:{
         user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS,
+        pass:process.env.EMAIL_PASS, 
     }
 });
 
 await transport.sendMail({
     from:'harshwardhany87@gmail.com',
-    to:checkUser.gmail,
+    to:gmail,
     subject:"your otp for changing the password is",
     text:`
     hello ${checkUser.name}
