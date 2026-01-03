@@ -1,4 +1,4 @@
-import {Request,Response} from 'express';
+import {Request,response,Response} from 'express';
 import { Resend } from 'resend';
 import {userModel} from '../models/userModel';
 import jwt from 'jsonwebtoken';
@@ -117,4 +117,51 @@ return res.status(200).json({
         gmail:checkUser.gmail,
     },
 });
+}
+
+
+
+
+
+export const otpVerify=async(req:Request,res:Response)=>{
+    const {otp}=req.body;
+    if(!otp){
+        return res.status(401).json({
+            message:"Enter otp correctly",
+        })
+    }
+    const currentUser=(req as any).user.gmail;
+    const checkUser=await userModel.findOne({gmail:currentUser});
+    if(!checkUser){
+        return res.status(401).json({
+            message:"user not found",
+        });
+    }
+    if(!checkUser.otp){
+        return res.status(401).json({
+            messsage:"user has not otp"
+        });
+    }
+    if(!checkUser.otpExpire){
+        return res.status(401).json({
+            message:"user has not yet click forgot password"
+        });
+    }
+    if(checkUser.otpExpire<Date.now()){
+        return res.status(401).json({
+            message:"please enter correct otp"
+        });
+    }
+    if(checkUser.otp!==otp){
+        return res.status(401).json({
+            message:"incorrect otp",
+        });
+    }
+    checkUser.otp=null;
+    checkUser.otpExpire=null;
+    await checkUser.save();
+        return res.status(200).json({
+            message:"User enter correct otp",
+            data:checkUser,
+        });
 }
