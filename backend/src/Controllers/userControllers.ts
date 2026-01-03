@@ -1,8 +1,9 @@
 import {Request,Response} from 'express';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import {userModel} from '../models/userModel';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+const resend = new Resend(process.env.RESEND_API_KEY);
 export const getAll=async(req:Request,res:Response)=>{
     const allUser=await userModel.find();
     return res.status(200).json({
@@ -96,22 +97,19 @@ const randomNumber=Math.floor(100000+Math.random()*900000);
 checkUser.otp=randomNumber;
 checkUser.otpExpire=Date.now()+(2*60*1000);
 await checkUser.save();
-const transport=nodemailer.createTransport({
-      host:"smtp.gmail.com",
-      port:465,
-      secure:true,
-    auth:{
-        user:process.env.EMAIL_USER,
-        pass:process.env.EMAIL_PASS, 
-    }
-});
 
-await transport.sendMail({
-    from:process.env.EMAIL_USER,
-    to:gmail,
-    subject:"your otp for changing the password is",
-    text:`hello ${checkUser.name} Your otp for reseting password is ${randomNumber}.It will expire in two minutes.`
-});
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM!,
+      to: gmail,
+      subject: "OTP for Password Reset",
+      text: `Hello ${checkUser.name},
+Your OTP for resetting password is: ${randomNumber}
+
+This OTP will expire in 2 minutes.
+
+Regards,
+AuthCore Team`,
+    });
 return res.status(200).json({
     message:"otp send successfully",
     data:{
