@@ -98,17 +98,17 @@ checkUser.otp=randomNumber;
 checkUser.otpExpire=Date.now()+(2*60*1000);
 await checkUser.save();
 const transport=nodemailer.createTransport({
-    host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      host:"smtp.gmail.com",
+      port:465,
+      secure:true,
     auth:{
-        user:'harshwardhany87@gmail.com',
-        pass:'qdlu msyi yymt tjxk', 
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASS, 
     }
 });
 
 await transport.sendMail({
-    from:'harshwardhany87@gmail.com',
+    from:process.env.EMAIL_USER,
     to:gmail,
     subject:"your otp for changing the password is",
     text:`hello ${checkUser.name} Your otp for reseting password is ${randomNumber}.It will expire in two minutes.`
